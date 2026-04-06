@@ -1,1 +1,109 @@
+# South African Healthcare Charges — Predictive Modelling
 
+A supervised machine learning project that cleans, explores, and models a real-world South African healthcare dataset to predict patient medical charges using Linear Regression and Random Forest Regressor.
+
+---
+
+## Project Overview
+
+This project follows the full data science workflow — from raw messy data to a trained predictive model — using a South African healthcare dataset (`sa_healthcare_big_messy.csv`). The goal is to identify the key drivers of healthcare costs and build a model that accurately predicts charges per patient.
+
+---
+
+## Dataset
+
+| Feature | Description |
+|---------|-------------|
+| `age` | Age of the patient |
+| `sex` | Gender of the patient |
+| `bmi` | Body Mass Index |
+| `children` | Number of dependants |
+| `smoker` | Smoking status (yes / no) |
+| `region` | South African province |
+| `charges` | Medical charges billed (ZAR) |
+
+---
+
+## Project Structure
+
+```
+├── notebook.ipynb               # Main Jupyter notebook (full workflow)
+├── sa_healthcare_big_messy.csv  # Raw dataset
+└── README.md
+```
+
+---
+
+## Workflow
+
+### 1. Data Cleaning
+- Removed 3 284 duplicate rows
+- Standardised inconsistent text in `region` and `sex` columns (mixed casing, extra spaces)
+- Removed impossible age values (outside 0–100)
+- Stripped currency formatting from `charges` column (`R` symbol and commas) and converted to float
+- Filled 229 missing `bmi` values using the median per sex group
+
+### 2. Exploratory Data Analysis (EDA)
+Four visualisations were produced to understand the data before modelling:
+
+- **Histogram** — distribution of charges (right-skewed, majority below R15,000)
+- **Boxplot** — charges by South African province (comparing regional differences)
+- **Correlation Heatmap** — mathematical relationships between all features (`smoker_yes` has the strongest correlation with charges)
+- **Scatter Plot** — age vs charges colour-coded by smoker status (reveals two distinct cost bands)
+
+### 3. Feature Engineering
+- Applied One-Hot Encoding to categorical columns (`sex`, `smoker`, `region`) using `drop_first=True` to avoid multicollinearity
+- Eastern Cape was used as the reference category for region
+
+### 4. Modelling
+Both models were trained on an 80/20 train-test split (`random_state=42`).
+
+| Model | R² Score | RMSE |
+|-------|----------|------|
+| Linear Regression | ~0.75 | ~R5,800 |
+| Random Forest Regressor | ~0.88+ | ~R3,500 |
+
+**Random Forest configuration:**
+```python
+RandomForestRegressor(n_estimators=500, max_depth=15, min_samples_split=5, random_state=42)
+```
+
+### 5. Visual Validation
+An Actual vs Predicted scatter plot with a dashed ideal fit line was produced for the best performing model.
+
+---
+
+## Libraries Used
+
+```python
+import numpy as np
+import pandas as pd
+import seaborn as sn
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score, mean_squared_error
+from sklearn.ensemble import RandomForestRegressor
+```
+
+---
+
+## Key Findings
+
+- **Smoking status** is the strongest single predictor of healthcare charges
+- **Age** is the second most important cost driver
+- **Region** has a weak correlation with charges — province alone does not significantly affect cost
+- Random Forest significantly outperforms Linear Regression due to the non-linear, segmented nature of the data
+
+---
+
+## How to Run
+
+1. Clone the repository
+2. Install dependencies: `pip install pandas numpy seaborn matplotlib scikit-learn`
+3. Place `sa_healthcare_big_messy.csv` in the same directory as the notebook
+4. Open and run `notebook.ipynb` from top to bottom
+
+---
+
+*Vaal University of Technology — EIARI4A Artificial Intelligence Module 2026*
